@@ -1,29 +1,41 @@
-#
+# 
 # VanishNoPacket
 #   A fine choice of invisibility for the discerning server administrator.
 #   http://www.kitteh.org
-#
-#  See documentation for details:
-#  http://dev.bukkit.org/server-mods/vanish/pages/configuration/
-#
 fakeannounce:
-    automaticforsilentjoin: false
-    join: '%p joined the game.'
-    quit: '%p left the game.'
+  automaticforsilentjoin: false
+  join: '%p joined the game.'
+  quit: '%p left the game.'
 hooks:
-    essentials: false
-    dynmap: false
-    JSONAPI: false
-    spoutcraft: false
+  essentials: true
+  placeholderapi: true
+  dynmap: false
+  JSONAPI: false
+  spoutcraft: false
 checkupdates: true
+actionbar:
+  enabled: true
+  cooldown: 20
+  message: '&3You''re vanished'
+placeholderapi:
+  placeholders:
+    is_vanished: '&3&o[&b&oV&3&o]'
+    is_not_vanished: ''
+    other_is_vanished: '&aYes'
+    other_is_not_vanished: '&4No'
+    list_spacer: '&7, '
+    list_nick: '&b%player%'
 permissionsupdates:
-    checkonworldchange: false
+  checkonworldchange: false
 effects:
-    lightning:
-        count: 30
+  lightning:
+    count: 30
 colornametags: true
-
 permtest: false
 debug: false
-configVersionDoNotTouch: 
-    SeriouslyThisWillEraseYourConfig: 5
+messages:
+  json: true
+  prefix: '&3[&bVanish&3] '
+  usage: '&cCorrect usage: %usage%'
+configVersionDoNotTouch:
+  SeriouslyThisWillEraseYourConfig: 7

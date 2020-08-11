@@ -102,7 +102,7 @@ public final class VanishAnnounceManipulator {
         return message;
     }
 
-    void fakeJoin(Player player, boolean force) {
+    public void fakeJoin(Player player, boolean force) {
         if (force || !(this.playerOnlineStatus.containsKey(player.getName()) && this.playerOnlineStatus.get(player.getName()))) {
             this.plugin.getServer().broadcastMessage(ChatColor.YELLOW + this.injectPlayerInformation(Settings.getFakeJoin(), player));
             this.plugin.getLogger().info(player.getName() + " faked joining");
@@ -111,7 +111,7 @@ public final class VanishAnnounceManipulator {
         }
     }
 
-    void fakeQuit(Player player, boolean force) {
+    public void fakeQuit(Player player, boolean force) {
         if (force || !(this.playerOnlineStatus.containsKey(player.getName()) && !this.playerOnlineStatus.get(player.getName()))) {
             this.plugin.getServer().broadcastMessage(ChatColor.YELLOW + this.injectPlayerInformation(Settings.getFakeQuit(), player));
             this.plugin.getLogger().info(player.getName() + " faked quitting");

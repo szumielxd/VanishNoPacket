@@ -1,19 +1,23 @@
-name: VanishNoPacket
-main: org.kitteh.vanish.VanishPlugin
-version: '${vnp-version}'
-website: http://kitteh.org
-softdepend: [Essentials,dynmap,JSONAPI,bPermissions,Spout,GeoIPTools,TagAPI,ProtocolLib,Vault]
-author: mbaxter
-description: Vanish for the distinguished admin
+name: ${name}
+version: ${version}
+main: ${mainClass}
+authors: [mbaxter, ${author}]
+website: ${url}
+description: ${description}
+softdepend: [Essentials,dynmap,JSONAPI,bPermissions,Spout,GeoIPTools,TagAPI,ProtocolLib,Vault, PlaceholderAPI]
+
 dev-url: http://dev.bukkit.org/server-mods/vanish/
+api-version: 1.13
+
 commands:
   vanish:
     description: poof
     usage: /vanish
     aliases: [v,np,nf,ni,nc,nh]
+
 permissions:
   vanish.vanish:
-    default: false
+    default: op
     description: |
       Allows player to vanish. 
       REALLY should give players with this access to vanish.see
@@ -21,103 +25,103 @@ permissions:
       vanish.vanish.on: true
       vanish.vanish.off: true
   vanish.vanish.on:
-    default: false
+    default: op
     description: Can set state to vanished
   vanish.vanish.off:
-    default: false
+    default: op
     description: Can set state to unvanished from vanished
   vanish.see:
-    default: false
+    default: op
     description: Allows player to see vanished players
   vanish.statusupdates:
-    default: false
+    default: op
     description: Informed about players changing status
   vanish.list:
-    default: false
+    default: op
     description: Acquire a list of vanished users
   vanish.nopickup:
-    default: false
+    default: op
     description: If true player can pick up items when vanished
   vanish.nofollow:
-    default: false
+    default: op
     description: If true mobs do not follow player when vanished
   vanish.notrample:
-    default: false
+    default: op
     description: If true player does not trample crops
   vanish.nointeract:
-    default: false
+    default: op
     description: If true player cannot press buttons, break or place blocks, open doors, activate pressure pads etc
   vanish.nochat:
-    default: false
+    default: op
     description: No chatting while vanished
   vanish.nohunger:
-    default: false
+    default: op
     description: Nom nom nom. If true, doesn't lose food level when vanished
   vanish.preventincomingdamage:
-    default: false
+    default: op
     description: Prevent being harmed by things around you while vanished
   vanish.preventoutgoingdamage:
-    default: false
+    default: op
     description: Prevent accidentally hurting stuff while vanished
   vanish.preventdamage:
-    default: false
+    default: op
     description: Prevent damage both ways
     children:
       vanish.preventoutgoingdamage: true
       vanish.preventincomingdamage: true
   vanish.joinwithoutannounce:
-    default: false
+    default: op
     description: Join without announcing it
   vanish.joinvanished:
-    default: false
+    default: op
     description: Join vanished
   vanish.silentjoin:
-    default: false
+    default: op
     description: Join silently. Announce on toggling vanish off
     children:
       vanish.joinwithoutannounce: true
       vanish.joinvanished: true
   vanish.silentquit:
-    default: false
+    default: op
     description: ALWAYS quit silently. 
   vanish.silentchests:
-    default: false
+    default: op
     description: Allows user to read chests silently while vanished
   vanish.toggle.silentchests:
-    default: false
+    default: op
     description: Toggle ability to read chests silently
   vanish.toggle.see:
-    default: false
+    default: op
     description: Toggle seeing other vanished players
   vanish.toggle.nopickup:
-    default: false
+    default: op
     description: Toggle pickup ability
   vanish.toggle.nofollow:
-    default: false
+    default: op
     description: Toggle mob aggro
   vanish.toggle.nointeract:
-    default: false
+    default: op
     description: Toggle interaction ability (doors, pressurepads, buttons, breaking or placing blocks, etc)
   vanish.toggle.nochat:
-    default: false
+    default: op
     description: Toggle ability to chat
   vanish.toggle.nohunger:
-    default: false
+    default: op
     description: Toggle ability to not lose hunger
   vanish.toggle.damageout:
-    default: false
+    default: op
     description: Toggle outgoing damage
   vanish.toggle.damagein:
-    default: false
+    default: op
     description: Toggle incoming damage
   vanish.toggle.damage:
-    default: false
+    default: op
     description: Toggle both damage in and out
     children:
       vanish.toggle.damageout: true
       vanish.toggle.damagein: true
   vanish.toggle.all:
-    default: false
+    default: op
     description: Allows user to toggle all their settings ingame
     children:
       vanish.toggle.silentchests: true
@@ -129,67 +133,67 @@ permissions:
       vanish.toggle.nochat: true
       vanish.toggle.nohunger: true
   vanish.fakeannounce:
-    default: false
+    default: op
     description: Fake joining/leaving
   vanish.adminalerts:
-    default: false
+    default: op
     description: Receive alerts about updates and such
   vanish.permtest.self:
     default: true
     description: If PermTest is enabled, be able to use it on yourself
   vanish.permtest.other:
-    default: false
+    default: op
     description: If PermTest is enabled, be able to use it on others
   vanish.permtest.all:
-    default: false
+    default: op
     description: If PermTest is enabled, be able to use on self and others
     children:
       vanish.permtest.self: true
       vanish.permtest.other: true
   vanish.hooks.dynmap.alwayshidden:
-    default: false
+    default: op
     description: Always hide from dynmap
   vanish.hooks.essentials.hide:
-    default: false
+    default: op
     description: Hide user in Essentials
   vanish.spout.status:
-    default: false
+    default: op
     description: See a status bar if vanished in spoutcraft
   vanish.reload:
-    default: false
+    default: op
     description: Reloads some VNP systems
   vanish.effects.smoke:
-    default: false
+    default: op
     description: Creates smoke effect when vanishing and re-appearing
   vanish.effects.explode:
-    default: false
+    default: op
     description: Creates explosion effect when vanishing and re-appearing
   vanish.effects.lightning:
-    default: false
+    default: op
     description: Creates a lightning barrage around a player when vanishing and re-appearing
   vanish.effects.flames:
-    default: false
+    default: op
     description: Creates a mob spawner flames effect around a player when vanishing and re-appearing
   vanish.effects.bats:
-    default: false
+    default: op
     description: Creates a swarm of bats around a player when vanishing and re-appearing
   vanish.effects.toggle.smoke:
-    default: false
+    default: op
     description: Toggle smoke on vanish toggle
   vanish.effects.toggle.explode:
-    default: false
+    default: op
     description: Toggle explode on vanish toggle
   vanish.effects.toggle.lightning:
-    default: false
+    default: op
     description: Toggle lightning on vanish toggle
   vanish.effects.toggle.flames:
-    default: false
+    default: op
     description: Toggle flames on vanish toggle
   vanish.effects.toggle.bats:
-    default: false
+    default: op
     description: Toggle bats on vanish toggle
   vanish.effects.toggle.all:
-    default: false
+    default: op
     description: Toggle all vanish toggle effects
     children:
       vanish.effects.toggle.smoke: true
@@ -209,7 +213,7 @@ permissions:
       vanish.statusupdates: true
       vanish.list: true
   vanish.standard:
-    default: false
+    default: op
     description: Can vanish, see vanished, no pickup when vanished
     children:
       vanish.see: true
@@ -226,7 +230,7 @@ permissions:
       vanish.adminalerts: true
       vanish.silentchests: true
   vanish.*:
-    default: false    
+    default: op    
     description: Oh god everything.
     children:
       vanish.standard: true

@@ -14,43 +14,43 @@ import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.api.PlayerDisguiseEvent;
 
 public final class DisguiseCraftHook extends Hook implements Listener {
-    private DisguiseCraftAPI disguiseCraft = null;
+	private DisguiseCraftAPI disguiseCraft = null;
 
-    public DisguiseCraftHook(VanishPlugin plugin) {
-        super(plugin);
-    }
+	public DisguiseCraftHook(VanishPlugin plugin) {
+		super(plugin);
+	}
 
-    @EventHandler
-    public void beforeVanishChange(VanishStatusChangeEvent event) {
-        if (this.disguiseCraft == null) {
-            return;
-        }
-        final Player player = event.getPlayer();
-        if (this.disguiseCraft.isDisguised(player)) {
-            this.disguiseCraft.undisguisePlayer(player);
-            player.sendMessage(ChatColor.AQUA + "You have been undisguised for toggling vanishing.");
-        }
-    }
+	@EventHandler
+	public void beforeVanishChange(VanishStatusChangeEvent event) {
+		if (this.disguiseCraft == null) {
+			return;
+		}
+		final Player player = event.getPlayer();
+		if (this.disguiseCraft.isDisguised(player)) {
+			this.disguiseCraft.undisguisePlayer(player);
+			player.sendMessage(ChatColor.AQUA + "You have been undisguised for toggling vanishing.");
+		}
+	}
 
-    @EventHandler
-    public void onDisguise(PlayerDisguiseEvent event) {
-        if (this.disguiseCraft == null) {
-            return;
-        }
-        final Player player = event.getPlayer();
-        if (this.plugin.getManager().isVanished(player.getName())) {
-            this.plugin.getManager().toggleVanishQuiet(player, false);
-            player.sendMessage(ChatColor.AQUA + "You have been unvanished for toggling disguising.");
-        }
-    }
+	@EventHandler
+	public void onDisguise(PlayerDisguiseEvent event) {
+		if (this.disguiseCraft == null) {
+			return;
+		}
+		final Player player = event.getPlayer();
+		if (this.plugin.getManager().isVanished(player.getName())) {
+			this.plugin.getManager().toggleVanishQuiet(player, false);
+			player.sendMessage(ChatColor.AQUA + "You have been unvanished for toggling disguising.");
+		}
+	}
 
-    @Override
-    public void onEnable() {
-        final Plugin disguiseCraft = this.plugin.getServer().getPluginManager().getPlugin("DisguiseCraft");
-        if (disguiseCraft != null) {
-            this.plugin.getLogger().info("Now hooking into DisguiseCraft");
-            this.disguiseCraft = DisguiseCraft.getAPI();
-            this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-        }
-    }
+	@Override
+	public void onEnable() {
+		final Plugin disguiseCraft = this.plugin.getServer().getPluginManager().getPlugin("DisguiseCraft");
+		if (disguiseCraft != null) {
+			this.plugin.getLogger().info("Now hooking into DisguiseCraft");
+			this.disguiseCraft = DisguiseCraft.getAPI();
+			this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+		}
+	}
 }

@@ -1,6 +1,12 @@
 package org.kitteh.vanish;
 
 import com.google.common.collect.ImmutableSet;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -10,9 +16,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.scheduler.BukkitTask;
 import org.kitteh.vanish.event.VanishStatusChangeEvent;
 import org.kitteh.vanish.metrics.MetricsOverlord;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,7 +56,8 @@ public final class VanishManager {
             this.entries.add(player);
         }
 
-        @Override
+        @SuppressWarnings("deprecation")
+		@Override
         public void run() {
             for (final ShowPlayerEntry entry : this.next) {
                 final Player player = entry.getPlayer();
@@ -63,7 +72,7 @@ public final class VanishManager {
         }
     }
 
-    public static final String VANISH_PLUGIN_CHANNEL = "vanishnopacket:status";
+    public static final String VANISH_PLUGIN_CHANNEL = "vnp:state";
 
     private final VanishPlugin plugin;
     private final Set<String> vanishedPlayerNames = Collections.synchronizedSet(new HashSet<String>());
@@ -76,7 +85,7 @@ public final class VanishManager {
     public VanishManager(final VanishPlugin plugin) {
         this.plugin = plugin;
         this.announceManipulator = new VanishAnnounceManipulator(this.plugin);
-        this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, this.showPlayer, 4, 4);
+        this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, this.showPlayer, 10, 10);
 
         this.plugin.getServer().getMessenger().registerIncomingPluginChannel(this.plugin, VanishManager.VANISH_PLUGIN_CHANNEL, new PluginMessageListener() {
             @Override
@@ -88,6 +97,43 @@ public final class VanishManager {
         });
         this.plugin.getServer().getMessenger().registerOutgoingPluginChannel(this.plugin, VanishManager.VANISH_PLUGIN_CHANNEL);
 
+    }
+    
+    
+    private BukkitTask actionBarTask = null;
+    
+    public void startActionBarUpdateTimer() {
+    	try {
+			Class.forName("net.md_5.bungee.api.chat.TextComponent");
+		} catch (ClassNotFoundException e) {
+			this.plugin.getLogger().warning("Actionbar features are available only on Spigot fork of CraftBukkit");
+			return;
+		}
+    	if(this.actionBarTask != null) this.actionBarTask.cancel();
+    	final int seconds = Settings.getActionBarCooldown();
+    	final String message = ChatColor.translateAlternateColorCodes('&', Settings.getActionBarMessage());
+    	try {
+    		Player.Spigot.class.getMethod("sendMessage", ChatMessageType.class, BaseComponent.class);
+			this.actionBarTask = Bukkit.getScheduler().runTaskTimer(this.plugin, new Runnable() {
+				@Override
+	    		public void run() {
+	    			Set<String> players = plugin.getManager().getVanishedPlayers();
+	    			if(!players.isEmpty())for(String str : players) {
+	    				Player p = Bukkit.getPlayerExact(str);
+	    				if(p != null) p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+	    			}
+	    		}
+	    	}, seconds, seconds);
+		} catch (NoSuchMethodException e) {
+		}
+    }
+    
+    
+    public void stopActionBarUpdateTimer() {
+    	if(this.actionBarTask != null) {
+    		this.actionBarTask.cancel();
+    		this.actionBarTask = null;
+    	}
     }
 
     /**
@@ -149,13 +195,18 @@ public final class VanishManager {
      *
      * @param player the player who has quit
      */
-    public void playerQuit(Player player) {
+    @SuppressWarnings("deprecation")
+	public void playerQuit(Player player) {
         Debuggle.log("Quitting: " + player.getName());
         this.resetSleepingIgnored(player);
         VanishPerms.userQuit(player);
         this.removeVanished(player.getName());
         for (Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
-            otherPlayer.showPlayer(player);
+        	try {
+        		otherPlayer.showPlayer(player);
+        	} catch(NoSuchMethodError e) {
+        		
+        	}
         }
     }
 
@@ -235,7 +286,8 @@ public final class VanishManager {
      * @param vanishingPlayer
      * @param effects if true, trigger effects
      */
-    public void toggleVanishQuiet(Player vanishingPlayer, boolean effects) {
+    @SuppressWarnings("deprecation")
+	public void toggleVanishQuiet(Player vanishingPlayer, boolean effects) {
         final boolean vanishing = !this.isVanished(vanishingPlayer);
         final String vanishingPlayerName = vanishingPlayer.getName();
         if (vanishing) {
@@ -281,7 +333,7 @@ public final class VanishManager {
         }
         this.plugin.getServer().getPluginManager().callEvent(new VanishStatusChangeEvent(vanishingPlayer, vanishing));
         vanishingPlayer.sendPluginMessage(this.plugin, VanishManager.VANISH_PLUGIN_CHANNEL, vanishing ? new byte[]{0x01} : new byte[]{0x00});
-        final java.util.Collection<? extends Player> playerList = this.plugin.getServer().getOnlinePlayers();
+        final Collection<? extends Player> playerList = this.plugin.getServer().getOnlinePlayers();
         for (final Player otherPlayer : playerList) {
             if (vanishingPlayer.equals(otherPlayer)) {
                 continue;
@@ -410,7 +462,8 @@ public final class VanishManager {
         }
     }
 
-    private void hideVanished(Player player) {
+    @SuppressWarnings("deprecation")
+	private void hideVanished(Player player) {
         for (final Player otherPlayer : this.plugin.getServer().getOnlinePlayers()) {
             if (!player.equals(otherPlayer) && this.isVanished(otherPlayer) && player.canSee(otherPlayer)) {
                 player.hidePlayer(otherPlayer);
@@ -430,7 +483,9 @@ public final class VanishManager {
         }
     }
 
-    void onPluginDisable() {
+    @SuppressWarnings("deprecation")
+	void onPluginDisable() {
+    	stopActionBarUpdateTimer();
         for (final Player player : this.plugin.getServer().getOnlinePlayers()) {
             for (final Player player2 : this.plugin.getServer().getOnlinePlayers()) {
                 if ((player != null) && (player2 != null) && !player.equals(player2)) {

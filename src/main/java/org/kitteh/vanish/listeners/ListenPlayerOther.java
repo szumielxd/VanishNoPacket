@@ -2,15 +2,9 @@ package org.kitteh.vanish.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.BrewingStand;
 import org.bukkit.block.Chest;
-import org.bukkit.block.Dispenser;
-import org.bukkit.block.Dropper;
-import org.bukkit.block.Furnace;
-import org.bukkit.block.Hopper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,11 +19,13 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.kitteh.vanish.Settings;
 import org.kitteh.vanish.VanishPerms;
 import org.kitteh.vanish.VanishPlugin;
 import org.kitteh.vanish.metrics.MetricsOverlord;
 
+@SuppressWarnings("deprecation")
 public final class ListenPlayerOther implements Listener {
     private final VanishPlugin plugin;
 
@@ -85,23 +81,28 @@ public final class ListenPlayerOther implements Listener {
                     inventory = player.getEnderChest();
                     break;
                 case DISPENSER:
-                    inventory = ((Dispenser) blockState).getInventory();
+                    inventory = ((InventoryHolder) blockState).getInventory();
                     break;
                 case HOPPER:
-                    inventory = ((Hopper) blockState).getInventory();
+                    inventory = ((InventoryHolder) blockState).getInventory();
                     break;
                 case DROPPER:
-                    inventory = ((Dropper) blockState).getInventory();
+                    inventory = ((InventoryHolder) blockState).getInventory();
                     break;
                 case FURNACE:
-                    inventory = ((Furnace) blockState).getInventory();
+                    inventory = ((InventoryHolder) blockState).getInventory();
                     break;
                 case BREWING_STAND:
-                    inventory = ((BrewingStand) blockState).getInventory();
+                    inventory = ((InventoryHolder) blockState).getInventory();
                     break;
                 case BEACON:
-                    inventory = ((Beacon) blockState).getInventory();
-                    break;
+                	try {
+                		inventory = ((InventoryHolder) blockState).getInventory();
+                	} catch(NoSuchMethodError e) {
+                	}
+                	break;
+			default:
+				break;
             }
             if (inventory != null) {
                 event.setCancelled(true);
@@ -117,7 +118,9 @@ public final class ListenPlayerOther implements Listener {
             event.setCancelled(true);
             return;
         }
-        if ((event.getAction() == Action.PHYSICAL) && (event.getClickedBlock().getType() == Material.SOIL)) {
+        Material soil = Material.getMaterial("SOIL");
+        if(soil == null) soil = Material.getMaterial("LEGACY_SOIL");
+        if ((event.getAction() == Action.PHYSICAL) && (event.getClickedBlock().getType() == soil)) {
             if (this.plugin.getManager().isVanished(player) && VanishPerms.canNotTrample(player)) {
                 event.setCancelled(true);
             }
@@ -126,7 +129,10 @@ public final class ListenPlayerOther implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (this.plugin.getManager().isVanished(event.getPlayer()) && VanishPerms.canNotPickUp(event.getPlayer())) {
+    	//if(!event.getEntityType().equals(EntityType.PLAYER)) return;
+    	//Player p = (Player)event.getEntity();
+    	Player p = event.getPlayer();
+        if (this.plugin.getManager().isVanished(p) && VanishPerms.canNotPickUp(p)) {
             event.setCancelled(true);
         }
     }
